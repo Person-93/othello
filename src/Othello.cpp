@@ -52,10 +52,13 @@ void Othello::render( gui::ImGuiWrapper& imGuiWrapper ) {
 
             if ( x < 8 && y < 8 && boardState.at( x ).at( y ) != State::EMPTY ) return;
 
-            if ( isLegalMove( x, y, blackTurn )) drawGhost( x, y, blackTurn );
+            if ( x < 8 && y < 8 && isLegalMove( x, y, blackTurn )) {
+                drawGhost( x, y, blackTurn );
+            }
+            else
+                return;
 
             if ( ImGui::IsMouseClicked( 0 )) {
-                LOG4CPLUS_DEBUG( GetLogger(), "Grid was clicked" );
                 if ( placePiece( mouse.x / size.x * 8, mouse.y / size.y * 8, blackTurn ))
                     blackTurn = !blackTurn;
             }
@@ -108,19 +111,20 @@ void Othello::renderPieces() {
 
 bool Othello::placePiece( int x, int y, bool isBlack ) {
     auto& place = boardState.at( x ).at( y );
-    if ( isLegalMove( x, y, isBlack )) {
-        LOG4CPLUS_DEBUG( GetLogger(),
-                         "Placing " << ( isBlack ? "Black" : "White" ) <<
-                                    " piece at (" << x << ',' << y << ')' );
-        place = isBlack ? State::BLACK : State::WHITE;
-        return true;
+    if ( !isLegalMove( x, y, isBlack )) return false;
+    LOG4CPLUS_DEBUG( GetLogger(),
+                     "Placing " << ( isBlack ? "Black" : "White" ) <<
+                                " piece at (" << x << ',' << y << ')' );
+    const auto& newState = isBlack ? State::BLACK : State::WHITE;
+    place = newState;
+    for ( const auto[x_, y_]: captures( x, y, isBlack )) {
+        boardState[ x_ ][ y_ ] = newState;
     }
-    return false;
+    return true;
 }
 
-bool Othello::isLegalMove( int x, int y, bool isBlack ) {
-    // TODO implement isLegalMove
-    return true;
+bool Othello::isLegalMove( int x, int y, bool isBlack ) const {
+    return !captures( x, y, isBlack ).empty();
 }
 
 void Othello::drawGhost( int x, int y, bool black ) {
@@ -133,6 +137,79 @@ void Othello::drawGhost( int x, int y, bool black ) {
     float ySize      = windowSize.y / 8;
     drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
                                std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
+}
+
+std::vector<std::pair<int, int>> Othello::captures( int x, int y, bool isBlack ) const {
+    Captures captures;
+    const auto& state = boardState.at( x ).at( y );
+    if ( state != State::EMPTY ) return captures;
+    const State same     = isBlack ? State::BLACK : State::WHITE;
+    const State opposite = isBlack ? State::WHITE : State::BLACK;
+
+    // check y-axis up
+    if ( y < 5 && boardState[ x ][ y + 1 ] == opposite ) {
+        Captures  temp;
+        for ( int i = y + 1; i < 8; ++i ) {
+            const State& nextSpot = boardState[ x ][ i ];
+            if ( nextSpot == opposite ) temp.push_back( { x, i } );
+            if ( nextSpot == same ) {
+                captures.reserve( temp.size());
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+    // check y-axis down
+    if ( y > 2 && boardState[ x ][ y - 1 ] == opposite ) {
+        Captures  temp;
+        for ( int i = y - 1; i >= 0; --i ) {
+            const State& nextSpot = boardState[ x ][ i ];
+            if ( nextSpot == opposite ) temp.push_back( { x, i } );
+            if ( nextSpot == same ) {
+                captures.reserve( temp.size());
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+
+    // check x-axis right
+    if ( x < 5 && boardState[ x + 1 ][ y ] == opposite ) {
+        Captures  temp;
+        for ( int i = x + 1; x < 8; ++x ) {
+            const State& nextSpot = boardState[ i ][ y ];
+            if ( nextSpot == opposite ) temp.push_back( { i, y } );
+            if ( nextSpot == same ) {
+                captures.reserve( temp.size());
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+    // check x-axis left
+    if ( x > 2 && boardState[ x - 1 ][ y ] == opposite ) {
+        Captures  temp;
+        for ( int i = x - 1; i >= 0; ++i ) {
+            const State& nextSpot = boardState[ i ][ y ];
+            if ( nextSpot == opposite ) temp.push_back( { i, y } );
+            if ( nextSpot == same ) {
+                captures.reserve( temp.size());
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+    // TODO in captures() check for diagonal captures
+
+    return captures;
 }
 
 

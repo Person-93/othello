@@ -13,11 +13,15 @@ public:
     void render( gui::ImGuiWrapper& imGuiWrapper );
 
 private:
+    using Captures = std::vector<std::pair<int, int>>;
+
     static void renderGrid();
 
     void renderPieces();
 
-    bool isLegalMove( int x, int y, bool isBlack );
+    [[nodiscard]] bool isLegalMove( int x, int y, bool isBlack ) const;
+
+    [[nodiscard]] Captures captures( int x, int y, bool isBlack ) const;
 
     void drawGhost( int x, int y, bool black );
 
