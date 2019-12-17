@@ -10,11 +10,22 @@ public:
 
     explicit Othello( bool& stayOpen );
 
-    void render( gui::ImGuiWrapper& imGuiWrapper ) const;
+    void render( gui::ImGuiWrapper& imGuiWrapper );
 
 private:
-    mutable gui::WindowConfig           config;
+    static void renderGrid();
+
+    void renderPieces();
+
+    bool isLegalMove( int x, int y, bool isBlack );
+
+    void drawGhost( int x, int y, bool black );
+
+    bool placePiece( int x, int y, bool isBlack );
+
+    gui::WindowConfig                   config;
     std::array<std::array<State, 8>, 8> boardState;
+    bool                                blackTurn = true;
 };
 
 
