@@ -212,7 +212,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
         }
     }
 
-    if ( x < 5 && y < 5 ) {
+    {
         Captures  temp;
         for ( int i = x + 1, j = y + 1; i < 8 && j < 8; ++i, ++j ) {
             const State& nextSpot = boardState[ i ][ j ];
@@ -225,7 +225,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
         }
     }
 
-    if ( x > 3 && y > 3 ) {
+    {
         Captures  temp;
         for ( int i = x - 1, j = y - 1; i >= 0 && j >= 0; --i, --j ) {
             const State& nextSpot = boardState[ i ][ j ];
@@ -238,7 +238,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
         }
     }
 
-    if ( x > 3 && y < 5 ) {
+    {
         Captures  temp;
         for ( int i = x - 1, j = y + 1; i >= 0 && j < 8; --i, ++j ) {
             const State& nextSpot = boardState[ i ][ j ];
@@ -251,7 +251,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
         }
     }
 
-    if ( x < 5 && y > 3 ) {
+    {
         Captures  temp;
         for ( int i = x + 1, j = y - 1; i < 8 && j >= 0; ++i, --j ) {
             const State& nextSpot = boardState[ i ][ j ];
