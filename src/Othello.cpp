@@ -212,7 +212,57 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
         }
     }
 
-    // TODO in captures() check for diagonal captures
+    if ( x < 5 && y < 5 ) {
+        Captures  temp;
+        for ( int i = x + 1, j = y + 1; i < 8 && j < 8; ++i, ++j ) {
+            const State& nextSpot = boardState[ i ][ j ];
+            if ( nextSpot == opposite ) temp.push_back( { i, j } );
+            if ( nextSpot == same ) {
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+    if ( x > 3 && y > 3 ) {
+        Captures  temp;
+        for ( int i = x - 1, j = y - 1; i >= 0 && j >= 0; --i, --j ) {
+            const State& nextSpot = boardState[ i ][ j ];
+            if ( nextSpot == opposite ) temp.push_back( { i, j } );
+            if ( nextSpot == same ) {
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+    if ( x > 3 && y < 5 ) {
+        Captures  temp;
+        for ( int i = x - 1, j = y + 1; i >= 0 && j < 8; --i, ++j ) {
+            const State& nextSpot = boardState[ i ][ j ];
+            if ( nextSpot == opposite ) temp.push_back( { i, j } );
+            if ( nextSpot == same ) {
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
+
+    if ( x < 5 && y > 3 ) {
+        Captures  temp;
+        for ( int i = x + 1, j = y - 1; i < 8 && j >= 0; ++i, --j ) {
+            const State& nextSpot = boardState[ i ][ j ];
+            if ( nextSpot == opposite ) temp.push_back( { i, j } );
+            if ( nextSpot == same ) {
+                captures.insert( captures.end(), temp.begin(), temp.end());
+                break;
+            }
+            if ( nextSpot == State::EMPTY ) break;
+        }
+    }
 
     return captures;
 }
