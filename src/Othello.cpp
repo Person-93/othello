@@ -156,7 +156,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     const State opposite = isBlack ? State::WHITE : State::BLACK;
 
     // check y-axis up
-    if ( y < 5 && boardState[ x ][ y + 1 ] == opposite ) {
+    {
         Captures  temp;
         for ( int i = y + 1; i < 8; ++i ) {
             const State& nextSpot = boardState[ x ][ i ];
@@ -170,7 +170,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     }
 
     // check y-axis down
-    if ( y > 2 && boardState[ x ][ y - 1 ] == opposite ) {
+    {
         Captures  temp;
         for ( int i = y - 1; i >= 0; --i ) {
             const State& nextSpot = boardState[ x ][ i ];
@@ -185,7 +185,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
 
 
     // check x-axis right
-    if ( x < 5 && boardState[ x + 1 ][ y ] == opposite ) {
+    {
         Captures  temp;
         for ( int i = x + 1; x < 8; ++i ) {
             const State& nextSpot = boardState[ i ][ y ];
@@ -199,7 +199,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     }
 
     // check x-axis left
-    if ( x > 2 && boardState[ x - 1 ][ y ] == opposite ) {
+    {
         Captures  temp;
         for ( int i = x - 1; i >= 0; --i ) {
             const State& nextSpot = boardState[ i ][ y ];
