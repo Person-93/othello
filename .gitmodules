@@ -1,0 +1,6 @@
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "vendor/log4cplus"]
+	path = vendor/log4cplus
+	url = https://github.com/log4cplus/log4cplus.git
