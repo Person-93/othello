@@ -1,4 +1,5 @@
 #include "Othello.hpp"
+#include <iostream>
 #include "gui/ImGuiWrapper.hpp"
 #include "util/define_logger.hpp"
 
@@ -12,6 +13,14 @@ namespace {
     const ImColor blackGhostColor{ 0, 0, 0, 100 };
     const ImColor whiteColor{ 255, 255, 255 };
     const ImColor whiteGhostColor{ 255, 255, 255, 100 };
+
+    std::ostream& operator<<( std::ostream& ostream, const Othello::Captures& captures ) {
+        ostream << '[';
+        for ( const auto&[x, y] : captures ) {
+            ostream << '(' << x << ',' << y << ')' << ", ";
+        }
+        return ostream << ']';
+    }
 }
 #pragma clang diagnostic pop
 
@@ -50,17 +59,19 @@ void Othello::render( gui::ImGuiWrapper& imGuiWrapper ) {
             auto x = mouse.x / size.x * 8;
             auto y = mouse.y / size.y * 8;
 
-            if ( x < 8 && y < 8 && boardState.at( x ).at( y ) != State::EMPTY ) return;
+            if ( x >= 8 || y >= 8 ) return;
 
-            if ( x < 8 && y < 8 && isLegalMove( x, y, blackTurn )) {
-                drawGhost( x, y, blackTurn );
-            }
-            else
-                return;
+            if ( boardState[ x ][ y ] != State::EMPTY ) return;
+
+            const Captures captures = captured( x, y, blackTurn );
+            if ( captures.empty()) return;
+
+            const State newState = blackTurn ? State::BLACK : State::WHITE;
+            drawGhosts( x, y, blackTurn, captures );
 
             if ( ImGui::IsMouseClicked( 0 )) {
-                if ( placePiece( mouse.x / size.x * 8, mouse.y / size.y * 8, blackTurn ))
-                    blackTurn = !blackTurn;
+                placePiece( x, y, blackTurn, captures );
+                blackTurn = !blackTurn;
             }
         }
     } );
@@ -98,9 +109,9 @@ void Othello::renderPieces() {
             ImColor color{};
             switch ( boardState[ i ][ j ] ) {
                 case State::EMPTY: continue;
-                case State::WHITE:color = whiteColor;
+                case State::WHITE: color = whiteColor;
                     break;
-                case State::BLACK:color = blackColor;
+                case State::BLACK: color = blackColor;
                     break;
             }
             drawList->AddCircleFilled( { pos.x + xSize * (float) i + xOffset, pos.y + ySize * (float) j + yOffset },
@@ -109,25 +120,19 @@ void Othello::renderPieces() {
     }
 }
 
-bool Othello::placePiece( int x, int y, bool isBlack ) {
+void Othello::placePiece( int x, int y, bool isBlack, const Captures& captures ) {
     auto& place = boardState.at( x ).at( y );
-    if ( !isLegalMove( x, y, isBlack )) return false;
     LOG4CPLUS_DEBUG( GetLogger(),
                      "Placing " << ( isBlack ? "Black" : "White" ) <<
-                                " piece at (" << x << ',' << y << ')' );
+                                " piece at (" << x << ',' << y << ')' << " Capturing:" << captures );
     const auto& newState = isBlack ? State::BLACK : State::WHITE;
     place = newState;
-    for ( const auto[x_, y_]: captures( x, y, isBlack )) {
+    for ( const auto[x_, y_]: captures ) {
         boardState[ x_ ][ y_ ] = newState;
     }
-    return true;
 }
 
-bool Othello::isLegalMove( int x, int y, bool isBlack ) const {
-    return !captures( x, y, isBlack ).empty();
-}
-
-void Othello::drawGhost( int x, int y, bool black ) {
+void Othello::drawGhosts( int x, int y, bool black, const Captures& captures ) {
     auto  windowSize = ImGui::GetWindowSize();
     auto  drawList   = ImGui::GetWindowDrawList();
     auto  pos        = ImGui::GetWindowPos();
@@ -137,9 +142,13 @@ void Othello::drawGhost( int x, int y, bool black ) {
     float ySize      = windowSize.y / 8;
     drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
                                std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
+    for ( const auto[x, y]: captured( x, y, black )) {
+        drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
+                                   std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
+    }
 }
 
-std::vector<std::pair<int, int>> Othello::captures( int x, int y, bool isBlack ) const {
+std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack ) const {
     Captures captures;
     const auto& state = boardState.at( x ).at( y );
     if ( state != State::EMPTY ) return captures;

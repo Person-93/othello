@@ -12,20 +12,18 @@ public:
 
     void render( gui::ImGuiWrapper& imGuiWrapper );
 
-private:
     using Captures = std::vector<std::pair<int, int>>;
+private:
 
     static void renderGrid();
 
     void renderPieces();
 
-    [[nodiscard]] bool isLegalMove( int x, int y, bool isBlack ) const;
+    [[nodiscard]] Captures captured( int x, int y, bool isBlack ) const;
 
-    [[nodiscard]] Captures captures( int x, int y, bool isBlack ) const;
+    void drawGhosts( int x, int y, bool black, const Captures& captures );
 
-    void drawGhost( int x, int y, bool black );
-
-    bool placePiece( int x, int y, bool isBlack );
+    void placePiece( int x, int y, bool isBlack, const Captures& captures );
 
     gui::WindowConfig                   config;
     std::array<std::array<State, 8>, 8> boardState;
