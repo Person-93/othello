@@ -19,10 +19,30 @@ int main() try {
     gui::ImGuiWrapper imGuiWrapper( "Othello" );
     bool              stayOpen = true;
     Othello           othello{ stayOpen };
+    gui::WindowConfig scoreWindowConfig{
+            .title = "Scores",
+            .open = &stayOpen,
+            .flags = ImGuiWindowFlags_NoTitleBar & ImGuiWindowFlags_AlwaysAutoResize
+    };
 
     while ( shouldRun && !imGuiWrapper.shouldClose()) {
         auto f = imGuiWrapper.frame( 20 );
         othello.render( imGuiWrapper );
+
+        ImGui::SetNextWindowPos( { 0, 0 } );
+        imGuiWrapper.window( scoreWindowConfig, [ othello ] {
+            auto score = othello.score();
+            ImGui::Columns( 2 );
+            ImGui::TextUnformatted( "Black score" );
+            ImGui::NextColumn();
+            ImGui::Text( "%d", score.first );
+            ImGui::NextColumn();
+            ImGui::Separator();
+            ImGui::TextUnformatted( "White score" );
+            ImGui::NextColumn();
+            ImGui::Text( "%d", score.second );
+            ImGui::Columns();
+        } );
     }
 
     return 0;

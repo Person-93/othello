@@ -12,6 +12,12 @@ public:
 
     void render( gui::ImGuiWrapper& imGuiWrapper );
 
+    /**
+     * Gets the current score as a pair, black score first, white score second
+     * @return
+     */
+    [[nodiscard]] std::pair<int, int> score() const;
+
     using Captures = std::vector<std::pair<int, int>>;
 private:
 

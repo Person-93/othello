@@ -267,4 +267,18 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     return captures;
 }
 
+std::pair<int, int> Othello::score() const {
+    std::pair<int, int> value{};
+    for ( const auto& cells: boardState )
+        for ( const auto& cell: cells )
+            switch ( cell ) {
+                case State::EMPTY: break;
+                case State::BLACK: value.first++;
+                    break;
+                case State::WHITE: value.second++;
+                    break;
+            }
+    return value;
+}
+
 
