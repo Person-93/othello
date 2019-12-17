@@ -162,7 +162,6 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
             const State& nextSpot = boardState[ x ][ i ];
             if ( nextSpot == opposite ) temp.push_back( { x, i } );
             if ( nextSpot == same ) {
-                captures.reserve( temp.size());
                 captures.insert( captures.end(), temp.begin(), temp.end());
                 break;
             }
@@ -177,7 +176,6 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
             const State& nextSpot = boardState[ x ][ i ];
             if ( nextSpot == opposite ) temp.push_back( { x, i } );
             if ( nextSpot == same ) {
-                captures.reserve( temp.size());
                 captures.insert( captures.end(), temp.begin(), temp.end());
                 break;
             }
@@ -189,11 +187,10 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     // check x-axis right
     if ( x < 5 && boardState[ x + 1 ][ y ] == opposite ) {
         Captures  temp;
-        for ( int i = x + 1; x < 8; ++x ) {
+        for ( int i = x + 1; x < 8; ++i ) {
             const State& nextSpot = boardState[ i ][ y ];
             if ( nextSpot == opposite ) temp.push_back( { i, y } );
             if ( nextSpot == same ) {
-                captures.reserve( temp.size());
                 captures.insert( captures.end(), temp.begin(), temp.end());
                 break;
             }
@@ -204,11 +201,10 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     // check x-axis left
     if ( x > 2 && boardState[ x - 1 ][ y ] == opposite ) {
         Captures  temp;
-        for ( int i = x - 1; i >= 0; ++i ) {
+        for ( int i = x - 1; i >= 0; --i ) {
             const State& nextSpot = boardState[ i ][ y ];
             if ( nextSpot == opposite ) temp.push_back( { i, y } );
             if ( nextSpot == same ) {
-                captures.reserve( temp.size());
                 captures.insert( captures.end(), temp.begin(), temp.end());
                 break;
             }
