@@ -6,7 +6,7 @@
 #include "version.hpp"
 #include "util/configure_logging.hpp"
 #include "gui/ImGuiWrapper.hpp"
-#include "Othello.hpp"
+#include "OthelloWindow.hpp"
 
 std::atomic_bool shouldRun = true;
 
@@ -18,7 +18,7 @@ int main() try {
     LOG4CPLUS_DEBUG( log4cplus::Logger::getRoot(), "Running version: " << version::longVersion());
     gui::ImGuiWrapper imGuiWrapper( "Othello" );
     bool              stayOpen = true;
-    Othello           othello{ stayOpen };
+    OthelloWindow     othelloWindow{ stayOpen };
     gui::WindowConfig scoreWindowConfig{
             .title = "Scores",
             .open = &stayOpen,
@@ -27,11 +27,11 @@ int main() try {
 
     while ( shouldRun && !imGuiWrapper.shouldClose()) {
         auto f = imGuiWrapper.frame( 20 );
-        othello.render( imGuiWrapper );
+        othelloWindow.render( imGuiWrapper );
 
         ImGui::SetNextWindowPos( { 0, 0 } );
-        imGuiWrapper.window( scoreWindowConfig, [ othello ] {
-            auto score = othello.score();
+        imGuiWrapper.window( scoreWindowConfig, [ othelloWindow ] {
+            auto score = othelloWindow.othello().score();
             ImGui::Columns( 2 );
             ImGui::TextUnformatted( "Black score" );
             ImGui::NextColumn();

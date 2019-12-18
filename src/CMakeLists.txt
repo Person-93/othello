@@ -20,12 +20,16 @@ add_library ( othello
               Othello.hpp
               Othello.cpp
               )
-target_link_libraries ( othello PUBLIC logging imgui )
+target_link_libraries ( othello PUBLIC logging )
 
-add_executable ( othello_exe main.cpp )
+add_executable ( othello_exe
+                 main.cpp
+                 OthelloWindow.hpp
+                 OthelloWindow.cpp
+                 )
 target_link_libraries ( othello_exe
+                        logging
                         othello
                         imgui
-                        logging
                         version
                         )
