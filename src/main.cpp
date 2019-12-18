@@ -15,6 +15,8 @@ extern "C" void signalHandler( int ) { shouldRun = false; }
 
 void scoreWindow( gui::ImGuiWrapper& imGuiWrapper, std::pair<int, int> score );
 
+void gameOverWindow( gui::ImGuiWrapper& imGuiWrapper, std::pair<int, int> score );
+
 int main() try {
     std::signal( SIGTERM, signalHandler );
     util::ConfigureLogging();
@@ -27,6 +29,7 @@ int main() try {
         mainMenu( imGuiWrapper, othelloWindow );
         othelloWindow.render( imGuiWrapper );
         scoreWindow( imGuiWrapper, othelloWindow.othello().score());
+        if ( othelloWindow.gameOver()) gameOverWindow( imGuiWrapper, othelloWindow.othello().score());
     }
 
     return 0;
@@ -55,5 +58,21 @@ void scoreWindow( gui::ImGuiWrapper& imGuiWrapper, std::pair<int, int> score ) {
         ImGui::NextColumn();
         ImGui::Text( "%d", score.second );
         ImGui::Columns();
+    } );
+}
+
+void gameOverWindow( gui::ImGuiWrapper& imGuiWrapper, std::pair<int, int> score ) {
+    static gui::WindowConfig config{
+            .title = "Game Over",
+            .flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
+    };
+    ImGui::SetNextWindowPosCenter();
+    imGuiWrapper.window( config, [ & ] {
+        if ( score.first > score.second )
+            ImGui::TextUnformatted( "Black wins!" );
+        else if ( score.second > score.first )
+            ImGui::TextUnformatted( "White wins!" );
+        else
+            ImGui::TextUnformatted( "Tie game!" );
     } );
 }
