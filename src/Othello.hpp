@@ -3,6 +3,16 @@
 #include <array>
 #include <utility>
 #include <vector>
+#include <unordered_map>
+
+struct HashPair {
+    template< class T1, class T2 >
+    size_t operator()( const std::pair<T1, T2>& p ) const {
+        auto hash1 = std::hash<T1>{}( p.first );
+        auto hash2 = std::hash<T2>{}( p.second );
+        return hash1 ^ hash2;
+    }
+};
 
 class Othello {
 public:
@@ -11,6 +21,7 @@ public:
     };
     using BoardState = std::array<std::array<State, 8>, 8>;
     using Captures   = std::vector<std::pair<int, int>>;
+    using LegalMoves = std::unordered_map<std::pair<int, int>, Captures, HashPair>;
 
     Othello();
 
@@ -27,6 +38,8 @@ public:
     [[nodiscard]] const BoardState& boardState() const { return boardState_; }
 
     [[nodiscard]] bool isBlackTurn() const { return blackTurn; }
+
+    [[nodiscard]] LegalMoves legalMoves() const;
 
 private:
     BoardState boardState_;

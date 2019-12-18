@@ -22,8 +22,16 @@ add_library ( othello
               )
 target_link_libraries ( othello PUBLIC logging )
 
+add_library ( AIs
+              RandomAi.hpp
+              RandomAi.cpp
+              )
+target_link_libraries ( AIs PUBLIC othello )
+
 add_executable ( othello_exe
                  main.cpp
+                 mainMenu.hpp
+                 mainMenu.cpp
                  OthelloWindow.hpp
                  OthelloWindow.cpp
                  )
@@ -32,4 +40,5 @@ target_link_libraries ( othello_exe
                         othello
                         imgui
                         version
+                        AIs
                         )

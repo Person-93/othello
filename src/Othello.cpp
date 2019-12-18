@@ -29,7 +29,7 @@ void Othello::placePiece( int x, int y, bool isBlack, const Captures& captures )
     const auto& newState = isBlack ? State::BLACK : State::WHITE;
     place = newState;
     for ( const auto[x_, y_]: captures ) {
-        boardState_[ x_ ][ y_ ] = newState;
+        boardState_.at( x_ ).at( y_ ) = newState;
     }
     blackTurn = !blackTurn;
 }
@@ -73,7 +73,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     // check x-axis right
     {
         Captures  temp;
-        for ( int i = x + 1; x < 8; ++i ) {
+        for ( int i = x + 1; i < 8; ++i ) {
             const State& nextSpot = boardState_[ i ][ y ];
             if ( nextSpot == opposite ) temp.push_back( { i, y } );
             if ( nextSpot == same ) {
@@ -165,6 +165,20 @@ std::pair<int, int> Othello::score() const {
                     break;
             }
     return value;
+}
+
+Othello::LegalMoves Othello::legalMoves() const {
+    LegalMoves legalMoves{};
+    for ( int  i = 0; i < boardState().size(); ++i ) {
+        for ( int j = 0; j < boardState().size(); ++j ) {
+            Captures captures = captured( i, j, blackTurn );
+            if ( !captures.empty()) {
+                legalMoves.insert( {{ i, j },
+                                    { std::move( captures ) }} );
+            }
+        }
+    }
+    return legalMoves;
 }
 
 
