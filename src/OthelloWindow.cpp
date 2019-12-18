@@ -126,10 +126,10 @@ void OthelloWindow::handlePlayerTurn() {
 
         if ( othello_.boardState()[ x ][ y ] != Othello::State::EMPTY ) return;
 
-        const auto captures = othello_.captured( x, y, othello_.isBlackTurn());
-        if ( captures.empty()) return;
+        const auto iter = legalMoves.find( { x, y } );
+        if ( iter == legalMoves.end()) return;
+        const auto& captures = iter->second;
 
-        const Othello::State newState = othello_.isBlackTurn() ? Othello::State::BLACK : Othello::State::WHITE;
         drawGhosts( x, y, othello_.isBlackTurn(), captures );
 
         if ( ImGui::IsMouseClicked( 0 )) {
