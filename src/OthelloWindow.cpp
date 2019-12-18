@@ -156,3 +156,7 @@ void OthelloWindow::placePiece( int x, int y, bool isBlack, const Othello::Captu
     othello_.placePiece( x, y, isBlack, captures );
     legalMoves = othello().legalMoves();
 }
+
+bool OthelloWindow::gameOver() const {
+    return legalMoves.empty();
+}

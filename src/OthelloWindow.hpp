@@ -18,6 +18,8 @@ public:
 
     void reset( std::unique_ptr<AI> ai );
 
+    bool gameOver() const;
+
 private:
     static void renderGrid();
 
