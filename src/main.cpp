@@ -22,7 +22,7 @@ int main() try {
     gui::WindowConfig scoreWindowConfig{
             .title = "Scores",
             .open = &stayOpen,
-            .flags = ImGuiWindowFlags_NoTitleBar & ImGuiWindowFlags_AlwaysAutoResize
+            .flags = ImGuiWindowFlags_NoDecoration
     };
 
     while ( shouldRun && !imGuiWrapper.shouldClose()) {
@@ -30,9 +30,11 @@ int main() try {
         othelloWindow.render( imGuiWrapper );
 
         ImGui::SetNextWindowPos( { 0, 0 } );
+        ImGui::SetNextWindowSize( { 125, 50 } );
         imGuiWrapper.window( scoreWindowConfig, [ othelloWindow ] {
             auto score = othelloWindow.othello().score();
             ImGui::Columns( 2 );
+            ImGui::SetColumnWidth( 0, 90 );
             ImGui::TextUnformatted( "Black score" );
             ImGui::NextColumn();
             ImGui::Text( "%d", score.first );
