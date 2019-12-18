@@ -1,16 +1,18 @@
 #pragma once
 
-#include "gui/ImGuiWrapper.hpp"
+#include <array>
+#include <utility>
+#include <vector>
 
 class Othello {
 public:
     enum class State {
         EMPTY, WHITE, BLACK
     };
+    using BoardState = std::array<std::array<State, 8>, 8>;
+    using Captures   = std::vector<std::pair<int, int>>;
 
-    explicit Othello( bool& stayOpen );
-
-    void render( gui::ImGuiWrapper& imGuiWrapper );
+    Othello();
 
     /**
      * Gets the current score as a pair, black score first, white score second
@@ -18,22 +20,17 @@ public:
      */
     [[nodiscard]] std::pair<int, int> score() const;
 
-    using Captures = std::vector<std::pair<int, int>>;
-private:
-
-    static void renderGrid();
-
-    void renderPieces();
-
     [[nodiscard]] Captures captured( int x, int y, bool isBlack ) const;
-
-    void drawGhosts( int x, int y, bool black, const Captures& captures );
 
     void placePiece( int x, int y, bool isBlack, const Captures& captures );
 
-    gui::WindowConfig                   config;
-    std::array<std::array<State, 8>, 8> boardState;
-    bool                                blackTurn = true;
+    [[nodiscard]] const BoardState& boardState() const { return boardState_; }
+
+    [[nodiscard]] bool isBlackTurn() const { return blackTurn; }
+
+private:
+    BoardState boardState_;
+    bool       blackTurn = true;
 };
 
 
