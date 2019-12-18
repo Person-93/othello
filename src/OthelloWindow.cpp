@@ -11,11 +11,12 @@ namespace {
 }
 #pragma clang diagnostic pop
 
-OthelloWindow::OthelloWindow( bool& stayOpen ) : config{
+OthelloWindow::OthelloWindow() : config{
         .title = "Game",
-        .open = &stayOpen,
         .flags = ImGuiWindowFlags_NoTitleBar,
-} {}
+}, legalMoves{ othello_.legalMoves() } {}
+
+OthelloWindow::~OthelloWindow() = default;
 
 void OthelloWindow::render( gui::ImGuiWrapper& imGuiWrapper ) {
     ImGui::SetNextWindowPosCenter();
@@ -29,32 +30,11 @@ void OthelloWindow::render( gui::ImGuiWrapper& imGuiWrapper ) {
     imGuiWrapper.window( config, [ this ] {
         renderGrid();
         renderPieces();
-        if ( ImGui::IsMouseHoveringWindow()) {
-            auto mouse = ImGui::GetMousePos();
-            auto pos   = ImGui::GetWindowPos();
-            auto size  = ImGui::GetWindowSize();
-
-            // translate mouse into current window coordinates
-            mouse.x -= pos.x;
-            mouse.y -= pos.y;
-
-            auto x = mouse.x / size.x * 8;
-            auto y = mouse.y / size.y * 8;
-
-            if ( x >= 8 || y >= 8 ) return;
-
-            if ( othello_.boardState()[ x ][ y ] != Othello::State::EMPTY ) return;
-
-            const auto captures = othello_.captured( x, y, othello_.isBlackTurn());
-            if ( captures.empty()) return;
-
-            const Othello::State newState = othello_.isBlackTurn() ? Othello::State::BLACK : Othello::State::WHITE;
-            drawGhosts( x, y, othello_.isBlackTurn(), captures );
-
-            if ( ImGui::IsMouseClicked( 0 )) {
-                othello_.placePiece( x, y, othello_.isBlackTurn(), captures );
-            }
-        }
+        if ( legalMoves.empty()) return;
+        if ( isPlayerTurn())
+            handlePlayerTurn();
+        else
+            handleComputerTurn();
     } );
 }
 
@@ -101,7 +81,10 @@ void OthelloWindow::renderPieces() {
     }
 }
 
-void OthelloWindow::drawGhosts( int x, int y, bool black, const Othello::Captures& captures ) {
+void OthelloWindow::drawGhosts( int x,
+                                int y,
+                                bool black,
+                                const Othello::Captures& captures ) { // NOLINT(readability-convert-member-functions-to-static)
     auto  windowSize = ImGui::GetWindowSize();
     auto  drawList   = ImGui::GetWindowDrawList();
     auto  pos        = ImGui::GetWindowPos();
@@ -111,8 +94,65 @@ void OthelloWindow::drawGhosts( int x, int y, bool black, const Othello::Capture
     float ySize      = windowSize.y / 8;
     drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
                                std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
-    for ( const auto[x, y]: captures) {
+    for ( const auto[x, y]: captures ) {
         drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
                                    std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
     }
+}
+
+void OthelloWindow::reset( std::unique_ptr<AI> ai ) {
+    othello_ = {};
+    this->ai = std::move( ai );
+}
+
+bool OthelloWindow::isPlayerTurn() const {
+    return ai == nullptr || ( aiIsBlack && !othello().isBlackTurn()) || ( !aiIsBlack && othello().isBlackTurn());
+}
+
+void OthelloWindow::handlePlayerTurn() {
+    if ( ImGui::IsMouseHoveringWindow()) {
+        auto mouse = ImGui::GetMousePos();
+        auto pos   = ImGui::GetWindowPos();
+        auto size  = ImGui::GetWindowSize();
+
+        // translate mouse into current window coordinates
+        mouse.x -= pos.x;
+        mouse.y -= pos.y;
+
+        auto x = mouse.x / size.x * 8;
+        auto y = mouse.y / size.y * 8;
+
+        if ( x >= 8 || y >= 8 ) return;
+
+        if ( othello_.boardState()[ x ][ y ] != Othello::State::EMPTY ) return;
+
+        const auto captures = othello_.captured( x, y, othello_.isBlackTurn());
+        if ( captures.empty()) return;
+
+        const Othello::State newState = othello_.isBlackTurn() ? Othello::State::BLACK : Othello::State::WHITE;
+        drawGhosts( x, y, othello_.isBlackTurn(), captures );
+
+        if ( ImGui::IsMouseClicked( 0 )) {
+            placePiece( x, y, othello_.isBlackTurn(), captures );
+        }
+        playerMovedTime = Clock::now();
+    }
+}
+
+void OthelloWindow::handleComputerTurn() {
+    if ( !gotComputerMove ) {
+        computerMove    = ai->go( othello(), aiIsBlack );
+        gotComputerMove = true;
+    }
+    if ( Clock::now() - playerMovedTime < std::chrono::seconds{ 1 } )
+        drawGhosts( computerMove.x, computerMove.y, aiIsBlack, computerMove.captures );
+    else {
+        placePiece( computerMove.x, computerMove.y, aiIsBlack, computerMove.captures );
+        gotComputerMove = false;
+    }
+}
+
+void OthelloWindow::placePiece( int x, int y, bool isBlack, const Othello::Captures& captures ) {
+    othello_.placePiece( x, y, isBlack, captures );
+    legalMoves = othello().legalMoves();
 }
