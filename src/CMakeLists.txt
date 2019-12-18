@@ -4,7 +4,11 @@ add_library ( logging
               util/configure_logging.cpp
               util/configure_logging.hpp
               )
-target_link_libraries ( logging PUBLIC log4cplus )
+if ( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+    target_link_libraries ( logging PUBLIC log4cplus )
+else ()
+    target_link_libraries ( logging PUBLIC log4cplusS )
+endif ()
 target_compile_definitions ( logging PUBLIC APPLICATION_LOG_LEVEL=${LOG_LEVEL}_LOG_LEVEL )
 
 add_library ( imgui
