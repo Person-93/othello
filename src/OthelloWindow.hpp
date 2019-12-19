@@ -4,6 +4,7 @@
 #include "gui/ImGuiWrapper.hpp"
 #include <memory>
 #include <chrono>
+#include <future>
 #include "AI.hpp"
 
 class OthelloWindow {
@@ -38,14 +39,14 @@ private:
     using Clock = std::chrono::steady_clock;
     using TimePoint = std::chrono::time_point<Clock>;
 
-    Othello             othello_;
-    Othello::LegalMoves legalMoves;
-    TimePoint           playerMovedTime;
-    ComputerMove        computerMove{};
-    bool                gotComputerMove = false;
-    gui::WindowConfig   config;
-    std::unique_ptr<AI> ai;
-    bool                aiIsBlack       = true;
+    Othello                                  othello_;
+    Othello::LegalMoves                      legalMoves;
+    TimePoint                                playerMovedTime;
+    std::optional<std::future<ComputerMove>> computerMoveFuture{};
+    std::optional<ComputerMove>              computerMove;
+    gui::WindowConfig                        config;
+    std::unique_ptr<AI>                      ai;
+    bool                                     aiIsBlack = true;
 };
 
 

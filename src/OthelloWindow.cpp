@@ -140,15 +140,23 @@ void OthelloWindow::handlePlayerTurn() {
 }
 
 void OthelloWindow::handleComputerTurn() {
-    if ( !gotComputerMove ) {
-        computerMove    = ai->go( othello(), aiIsBlack );
-        gotComputerMove = true;
+    if ( !computerMoveFuture.has_value()) {
+        computerMoveFuture = std::async( std::launch::async, [ this ] { return ai->go( othello(), aiIsBlack ); } );
+        return;
     }
+    if ( !computerMove.has_value() &&
+         computerMoveFuture->valid() &&
+         computerMoveFuture->wait_for( std::chrono::duration<int>::zero()) == std::future_status::ready )
+        computerMove = computerMoveFuture->get();
+
+    if ( !computerMove.has_value()) return;
+
     if ( Clock::now() - playerMovedTime < std::chrono::seconds{ 1 } )
-        drawGhosts( computerMove.x, computerMove.y, aiIsBlack, computerMove.captures );
+        drawGhosts( computerMove->x, computerMove->y, aiIsBlack, computerMove->captures );
     else {
-        placePiece( computerMove.x, computerMove.y, aiIsBlack, computerMove.captures );
-        gotComputerMove = false;
+        placePiece( computerMove->x, computerMove->y, aiIsBlack, computerMove->captures );
+        computerMoveFuture = std::nullopt;
+        computerMove       = std::nullopt;
     }
 }
 
