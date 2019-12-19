@@ -32,6 +32,7 @@ void Othello::placePiece( int x, int y, bool isBlack, const Captures& captures )
         boardState_.at( x_ ).at( y_ ) = newState;
     }
     blackTurn = !blackTurn;
+    if ( legalMoves().empty()) blackTurn = !blackTurn;
 }
 
 std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack ) const {
