@@ -19,7 +19,8 @@ public:
     enum class State {
         EMPTY, WHITE, BLACK
     };
-    using BoardState = std::array<std::array<State, 8>, 8>;
+    static constexpr int boardSize = 8;
+    using BoardState = std::array<std::array<State, boardSize>, boardSize>;
     using Captures   = std::vector<std::pair<int, int>>;
     using LegalMoves = std::unordered_map<std::pair<int, int>, Captures, HashPair>;
 
@@ -46,7 +47,7 @@ private:
 
     LegalMoves legalMoves_;
     BoardState boardState_;
-    bool       blackTurn = true;
+    bool       blackTurn           = true;
 };
 
 

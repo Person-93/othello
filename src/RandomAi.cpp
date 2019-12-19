@@ -4,7 +4,7 @@
 
 ComputerMove RandomAI::go( const Othello& othello, bool isBlack ) {
     static std::mt19937           generator{ std::random_device{}() };
-    std::uniform_int_distribution distribution{ 0, 7 };
+    std::uniform_int_distribution distribution{ 0, Othello::boardSize - 1 };
 
     ComputerMove move{};
     while ( move.captures.empty()) {

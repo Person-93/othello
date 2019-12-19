@@ -16,10 +16,11 @@ namespace {
 DEFINE_LOGGER( Othello )
 
 Othello::Othello() : boardState_{} {
-    boardState_[ 3 ][ 3 ] = State::WHITE;
-    boardState_[ 3 ][ 4 ] = State::BLACK;
-    boardState_[ 4 ][ 3 ] = State::BLACK;
-    boardState_[ 4 ][ 4 ] = State::WHITE;
+    constexpr int halfBoardSize = boardSize / 2;
+    boardState_[ halfBoardSize - 1 ][ halfBoardSize - 1 ] = State::WHITE;
+    boardState_[ halfBoardSize - 1 ][ halfBoardSize ]     = State::BLACK;
+    boardState_[ halfBoardSize ][ halfBoardSize - 1 ]     = State::BLACK;
+    boardState_[ halfBoardSize ][ halfBoardSize ]         = State::WHITE;
     calculateLegalMoves();
 }
 
@@ -54,7 +55,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     // check y-axis up
     {
         Captures  temp;
-        for ( int i = y + 1; i < 8; ++i ) {
+        for ( int i = y + 1; i < boardSize; ++i ) {
             const State& nextSpot = boardState_[ x ][ i ];
             if ( nextSpot == opposite ) temp.push_back( { x, i } );
             if ( nextSpot == same ) {
@@ -83,7 +84,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
     // check x-axis right
     {
         Captures  temp;
-        for ( int i = x + 1; i < 8; ++i ) {
+        for ( int i = x + 1; i < boardSize; ++i ) {
             const State& nextSpot = boardState_[ i ][ y ];
             if ( nextSpot == opposite ) temp.push_back( { i, y } );
             if ( nextSpot == same ) {
@@ -110,7 +111,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
 
     {
         Captures  temp;
-        for ( int i = x + 1, j = y + 1; i < 8 && j < 8; ++i, ++j ) {
+        for ( int i = x + 1, j = y + 1; i < boardSize && j < boardSize; ++i, ++j ) {
             const State& nextSpot = boardState_[ i ][ j ];
             if ( nextSpot == opposite ) temp.push_back( { i, j } );
             if ( nextSpot == same ) {
@@ -136,7 +137,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
 
     {
         Captures  temp;
-        for ( int i = x - 1, j = y + 1; i >= 0 && j < 8; --i, ++j ) {
+        for ( int i = x - 1, j = y + 1; i >= 0 && j < boardSize; --i, ++j ) {
             const State& nextSpot = boardState_[ i ][ j ];
             if ( nextSpot == opposite ) temp.push_back( { i, j } );
             if ( nextSpot == same ) {
@@ -149,7 +150,7 @@ std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack )
 
     {
         Captures  temp;
-        for ( int i = x + 1, j = y - 1; i < 8 && j >= 0; ++i, --j ) {
+        for ( int i = x + 1, j = y - 1; i < boardSize && j >= 0; ++i, --j ) {
             const State& nextSpot = boardState_[ i ][ j ];
             if ( nextSpot == opposite ) temp.push_back( { i, j } );
             if ( nextSpot == same ) {
@@ -179,8 +180,8 @@ std::pair<int, int> Othello::score() const {
 
 void Othello::calculateLegalMoves() {
     legalMoves_.clear();
-    for ( int i = 0; i < boardState().size(); ++i ) {
-        for ( int j = 0; j < boardState().size(); ++j ) {
+    for ( int i = 0; i < boardSize; ++i ) {
+        for ( int j = 0; j < boardSize; ++j ) {
             Captures captures = captured( i, j, blackTurn );
             if ( !captures.empty()) {
                 legalMoves_.insert( {{ i, j },

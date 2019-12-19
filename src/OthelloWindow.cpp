@@ -42,9 +42,9 @@ void OthelloWindow::renderGrid() {
     auto      windowSize = ImGui::GetWindowSize();
     auto      drawList   = ImGui::GetWindowDrawList();
     auto      pos        = ImGui::GetWindowPos();
-    for ( int i          = 1; i < 8; ++i ) {
-        auto x = windowSize.x / 8 * (float) i;
-        auto y = windowSize.y / 8 * (float) i;
+    for ( int i          = 1; i < Othello::boardSize; ++i ) {
+        auto x = windowSize.x / Othello::boardSize * (float) i;
+        auto y = windowSize.y / Othello::boardSize * (float) i;
         drawList->AddLine( { pos.x + x, pos.y },
                            { pos.x + x, pos.y + windowSize.y },
                            blackColor,
@@ -61,10 +61,10 @@ void OthelloWindow::renderPieces() {
     auto      windowSize = ImGui::GetWindowSize();
     auto      drawList   = ImGui::GetWindowDrawList();
     auto      pos        = ImGui::GetWindowPos();
-    float     xOffset    = windowSize.x / 16;
-    float     yOffset    = windowSize.y / 16;
-    float     xSize      = windowSize.x / 8;
-    float     ySize      = windowSize.y / 8;
+    float     xOffset    = windowSize.x / ( Othello::boardSize * 2 );
+    float     yOffset    = windowSize.y / ( Othello::boardSize * 2 );
+    float     xSize      = windowSize.x / Othello::boardSize;
+    float     ySize      = windowSize.y / Othello::boardSize;
     for ( int i          = 0; i < othello_.boardState().size(); ++i ) {
         for ( int j = 0; j < othello_.boardState().size(); ++j ) {
             ImColor color{};
@@ -88,10 +88,10 @@ void OthelloWindow::drawGhosts( int x,
     auto  windowSize = ImGui::GetWindowSize();
     auto  drawList   = ImGui::GetWindowDrawList();
     auto  pos        = ImGui::GetWindowPos();
-    float xOffset    = windowSize.x / 16;
-    float yOffset    = windowSize.y / 16;
-    float xSize      = windowSize.x / 8;
-    float ySize      = windowSize.y / 8;
+    float xOffset    = windowSize.x / ( Othello::boardSize * 2 );
+    float yOffset    = windowSize.y / ( Othello::boardSize * 2 );
+    float xSize      = windowSize.x / Othello::boardSize;
+    float ySize      = windowSize.y / Othello::boardSize;
     drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
                                std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
     for ( const auto[x, y]: captures ) {
@@ -119,15 +119,15 @@ void OthelloWindow::handlePlayerTurn() {
         mouse.x -= pos.x;
         mouse.y -= pos.y;
 
-        auto x = mouse.x / size.x * 8;
-        auto y = mouse.y / size.y * 8;
+        auto x = mouse.x / size.x * Othello::boardSize;
+        auto y = mouse.y / size.y * Othello::boardSize;
 
-        if ( x >= 8 || y >= 8 ) return;
+        if ( x >= Othello::boardSize || y >= Othello::boardSize ) return;
 
         if ( othello_.boardState()[ x ][ y ] != Othello::State::EMPTY ) return;
 
         const auto iter = othello().legalMoves().find( { x, y } );
-        if ( iter ==  othello().legalMoves().end()) return;
+        if ( iter == othello().legalMoves().end()) return;
         const auto& captures = iter->second;
 
         drawGhosts( x, y, othello_.isBlackTurn(), captures );
