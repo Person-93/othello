@@ -1,6 +1,7 @@
 #include "Othello.hpp"
 #include <iostream>
 #include "util/define_logger.hpp"
+#include "Exception.hpp"
 
 namespace {
     std::ostream& operator<<( std::ostream& ostream, const Othello::Captures& captures ) {
@@ -19,20 +20,28 @@ Othello::Othello() : boardState_{} {
     boardState_[ 3 ][ 4 ] = State::BLACK;
     boardState_[ 4 ][ 3 ] = State::BLACK;
     boardState_[ 4 ][ 4 ] = State::WHITE;
+    calculateLegalMoves();
 }
 
-void Othello::placePiece( int x, int y, bool isBlack, const Captures& captures ) {
-    auto& place = boardState_.at( x ).at( y );
-    LOG4CPLUS_DEBUG( GetLogger(),
-                     "Placing " << ( isBlack ? "Black" : "White" ) <<
-                                " piece at (" << x << ',' << y << ')' << " Capturing:" << captures );
-    const auto& newState = isBlack ? State::BLACK : State::WHITE;
+void Othello::placePiece( int x, int y ) {
+    auto iter = legalMoves().find( { x, y } );
+    if ( iter == legalMoves().end()) {
+        using namespace exception;
+        THROW_EXCEPTION(( Exception{} << Because{ "Illegal move" } << Move{{ x, y }} << Board{ boardState_ } ));
+    }
+    const Captures& captures = iter->second;
+    auto          & place    = boardState_.at( x ).at( y );
+    const auto    & newState = isBlackTurn() ? State::BLACK : State::WHITE;
     place = newState;
     for ( const auto[x_, y_]: captures ) {
         boardState_.at( x_ ).at( y_ ) = newState;
     }
     blackTurn = !blackTurn;
-    if ( legalMoves().empty()) blackTurn = !blackTurn;
+    calculateLegalMoves();
+    if ( legalMoves().empty()) {
+        blackTurn = !blackTurn;
+        calculateLegalMoves();
+    }
 }
 
 std::vector<std::pair<int, int>> Othello::captured( int x, int y, bool isBlack ) const {
@@ -168,18 +177,17 @@ std::pair<int, int> Othello::score() const {
     return value;
 }
 
-Othello::LegalMoves Othello::legalMoves() const {
-    LegalMoves legalMoves{};
-    for ( int  i = 0; i < boardState().size(); ++i ) {
+void Othello::calculateLegalMoves() {
+    legalMoves_.clear();
+    for ( int i = 0; i < boardState().size(); ++i ) {
         for ( int j = 0; j < boardState().size(); ++j ) {
             Captures captures = captured( i, j, blackTurn );
             if ( !captures.empty()) {
-                legalMoves.insert( {{ i, j },
-                                    { std::move( captures ) }} );
+                legalMoves_.insert( {{ i, j },
+                                     { std::move( captures ) }} );
             }
         }
     }
-    return legalMoves;
 }
 
 

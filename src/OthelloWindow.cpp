@@ -14,7 +14,7 @@ namespace {
 OthelloWindow::OthelloWindow() : config{
         .title = "Game",
         .flags = ImGuiWindowFlags_NoTitleBar,
-}, legalMoves{ othello_.legalMoves() } {}
+} {}
 
 OthelloWindow::~OthelloWindow() = default;
 
@@ -30,7 +30,7 @@ void OthelloWindow::render( gui::ImGuiWrapper& imGuiWrapper ) {
     imGuiWrapper.window( config, [ this ] {
         renderGrid();
         renderPieces();
-        if ( legalMoves.empty()) return;
+        if ( othello().legalMoves().empty()) return;
         if ( isPlayerTurn())
             handlePlayerTurn();
         else
@@ -126,8 +126,8 @@ void OthelloWindow::handlePlayerTurn() {
 
         if ( othello_.boardState()[ x ][ y ] != Othello::State::EMPTY ) return;
 
-        const auto iter = legalMoves.find( { x, y } );
-        if ( iter == legalMoves.end()) return;
+        const auto iter = othello().legalMoves().find( { x, y } );
+        if ( iter ==  othello().legalMoves().end()) return;
         const auto& captures = iter->second;
 
         drawGhosts( x, y, othello_.isBlackTurn(), captures );
@@ -161,10 +161,9 @@ void OthelloWindow::handleComputerTurn() {
 }
 
 void OthelloWindow::placePiece( int x, int y, bool isBlack, const Othello::Captures& captures ) {
-    othello_.placePiece( x, y, isBlack, captures );
-    legalMoves = othello().legalMoves();
+    othello_.placePiece( x, y );
 }
 
 bool OthelloWindow::gameOver() const {
-    return legalMoves.empty();
+    return othello().legalMoves().empty();
 }
