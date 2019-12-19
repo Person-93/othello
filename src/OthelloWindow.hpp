@@ -40,7 +40,6 @@ private:
     using TimePoint = std::chrono::time_point<Clock>;
 
     Othello                                  othello_;
-    Othello::LegalMoves                      legalMoves;
     TimePoint                                playerMovedTime;
     std::optional<std::future<ComputerMove>> computerMoveFuture{};
     std::optional<ComputerMove>              computerMove;

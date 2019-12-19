@@ -33,15 +33,18 @@ public:
 
     [[nodiscard]] Captures captured( int x, int y, bool isBlack ) const;
 
-    void placePiece( int x, int y, bool isBlack, const Captures& captures );
+    void placePiece( int x, int y );
 
     [[nodiscard]] const BoardState& boardState() const { return boardState_; }
 
     [[nodiscard]] bool isBlackTurn() const { return blackTurn; }
 
-    [[nodiscard]] LegalMoves legalMoves() const;
+    [[nodiscard]] const LegalMoves& legalMoves() const { return legalMoves_; }
 
 private:
+    void calculateLegalMoves();
+
+    LegalMoves legalMoves_;
     BoardState boardState_;
     bool       blackTurn = true;
 };
