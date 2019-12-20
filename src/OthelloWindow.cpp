@@ -1,4 +1,7 @@
 #include "OthelloWindow.hpp"
+#include "util/define_logger.hpp"
+
+DEFINE_LOGGER( OthelloWindow )
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cert-err58-cpp"
@@ -81,10 +84,14 @@ void OthelloWindow::renderPieces() {
     }
 }
 
-void OthelloWindow::drawGhosts( int x,
-                                int y,
-                                bool black,
-                                const Othello::Captures& captures ) { // NOLINT(readability-convert-member-functions-to-static)
+void OthelloWindow::drawGhosts( int x, int y ) {
+    const auto iter = othello().legalMoves().find( { x, y } );
+    if ( iter == othello().legalMoves().end()) {
+        using namespace exception;
+        THROW_EXCEPTION(( Exception{} << Because{ "Cannot draw ghosts for illegal move" } << Move{{ x, y }}
+                                      << Board{ othello().boardState() } ));
+    }
+    const auto& captures = othello().legalMoves().find( { x, y } )->second;
     auto  windowSize = ImGui::GetWindowSize();
     auto  drawList   = ImGui::GetWindowDrawList();
     auto  pos        = ImGui::GetWindowPos();
@@ -93,10 +100,12 @@ void OthelloWindow::drawGhosts( int x,
     float xSize      = windowSize.x / Othello::boardSize;
     float ySize      = windowSize.y / Othello::boardSize;
     drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
-                               std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
+                               std::min( xSize / 3, ySize / 3 ),
+                               othello().isBlackTurn() ? blackGhostColor : whiteGhostColor, 24 );
     for ( const auto[x, y]: captures ) {
         drawList->AddCircleFilled( { pos.x + xSize * (float) x + xOffset, pos.y + ySize * (float) y + yOffset },
-                                   std::min( xSize / 3, ySize / 3 ), black ? blackGhostColor : whiteGhostColor, 24 );
+                                   std::min( xSize / 3, ySize / 3 ),
+                                   othello().isBlackTurn() ? blackGhostColor : whiteGhostColor, 24 );
     }
 }
 
@@ -130,7 +139,7 @@ void OthelloWindow::handlePlayerTurn() {
         if ( iter == othello().legalMoves().end()) return;
         const auto& captures = iter->second;
 
-        drawGhosts( x, y, othello_.isBlackTurn(), captures );
+        drawGhosts( x, y );
 
         if ( ImGui::IsMouseClicked( 0 )) {
             placePiece( x, y, othello_.isBlackTurn(), captures );
@@ -152,7 +161,7 @@ void OthelloWindow::handleComputerTurn() {
     if ( !computerMove.has_value()) return;
 
     if ( Clock::now() - playerMovedTime < std::chrono::seconds{ 1 } )
-        drawGhosts( computerMove->x, computerMove->y, aiIsBlack, computerMove->captures );
+        drawGhosts( computerMove->x, computerMove->y );
     else {
         placePiece( computerMove->x, computerMove->y, aiIsBlack, computerMove->captures );
         computerMoveFuture = std::nullopt;
