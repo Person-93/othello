@@ -1,17 +1,14 @@
 #pragma once
 
 #include <utility>
-#include "Othello.hpp"
 
-struct ComputerMove {
-    int               x;
-    int               y;
-    Othello::Captures captures;
-};
+class Othello;
 
 class AI {
 public:
-    virtual ComputerMove go( const Othello& othello, bool isBlack ) = 0;
+    using Move = std::pair<int, int>;
+
+    virtual Move go( const Othello& othello, bool isBlack ) = 0;
 
     virtual ~AI() = default;
 };

@@ -34,18 +34,18 @@ private:
 
     void handleComputerTurn();
 
-    void placePiece( int x, int y, bool isBlack, const Othello::Captures& captures );
+    void placePiece( int x, int y );
 
     using Clock = std::chrono::steady_clock;
     using TimePoint = std::chrono::time_point<Clock>;
 
-    Othello                                  othello_;
-    TimePoint                                playerMovedTime;
-    std::optional<std::future<ComputerMove>> computerMoveFuture{};
-    std::optional<ComputerMove>              computerMove;
-    gui::WindowConfig                        config;
-    std::unique_ptr<AI>                      ai;
-    bool                                     aiIsBlack = true;
+    Othello                              othello_;
+    TimePoint                            playerMovedTime;
+    std::optional<std::future<AI::Move>> computerMoveFuture{};
+    std::optional<AI::Move>              computerMove;
+    gui::WindowConfig                    config;
+    std::unique_ptr<AI>                  ai;
+    bool                                 aiIsBlack = true;
 };
 
 

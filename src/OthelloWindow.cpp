@@ -142,7 +142,7 @@ void OthelloWindow::handlePlayerTurn() {
         drawGhosts( x, y );
 
         if ( ImGui::IsMouseClicked( 0 )) {
-            placePiece( x, y, othello_.isBlackTurn(), captures );
+            placePiece( x, y );
         }
         playerMovedTime = Clock::now();
     }
@@ -161,15 +161,15 @@ void OthelloWindow::handleComputerTurn() {
     if ( !computerMove.has_value()) return;
 
     if ( Clock::now() - playerMovedTime < std::chrono::seconds{ 1 } )
-        drawGhosts( computerMove->x, computerMove->y );
+        drawGhosts( computerMove->first, computerMove->second );
     else {
-        placePiece( computerMove->x, computerMove->y, aiIsBlack, computerMove->captures );
+        placePiece( computerMove->first, computerMove->second );
         computerMoveFuture = std::nullopt;
         computerMove       = std::nullopt;
     }
 }
 
-void OthelloWindow::placePiece( int x, int y, bool isBlack, const Othello::Captures& captures ) {
+void OthelloWindow::placePiece( int x, int y ) {
     othello_.placePiece( x, y );
 }
 

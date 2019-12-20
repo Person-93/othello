@@ -4,7 +4,7 @@
 
 class RandomAI : public AI {
 public:
-    ComputerMove go( const Othello& othello, bool isBlack ) override;
+    Move go( const Othello& othello, bool isBlack ) override;
 };
 
 
