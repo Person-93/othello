@@ -26,7 +26,7 @@ private:
 
     void renderPieces();
 
-    void drawGhosts( int x, int y, bool black, const Othello::Captures& captures );
+    void drawGhosts( int x, int y );
 
     [[nodiscard]] bool isPlayerTurn() const;
 
