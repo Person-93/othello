@@ -191,4 +191,6 @@ void Othello::calculateLegalMoves() {
     }
 }
 
-
+bool operator==( const Othello& a, const Othello& b ) {
+    return a.boardState() == b.boardState();
+}

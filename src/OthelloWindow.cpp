@@ -144,7 +144,6 @@ void OthelloWindow::handlePlayerTurn() {
         if ( ImGui::IsMouseClicked( 0 )) {
             placePiece( x, y );
         }
-        playerMovedTime = Clock::now();
     }
 }
 
@@ -155,12 +154,14 @@ void OthelloWindow::handleComputerTurn() {
     }
     if ( !computerMove.has_value() &&
          computerMoveFuture->valid() &&
-         computerMoveFuture->wait_for( std::chrono::duration<int>::zero()) == std::future_status::ready )
-        computerMove = computerMoveFuture->get();
+         computerMoveFuture->wait_for( std::chrono::duration<int>::zero()) == std::future_status::ready ) {
+        computerMove     = computerMoveFuture->get();
+        computerMoveTime = Clock::now();
+    }
 
     if ( !computerMove.has_value()) return;
 
-    if ( Clock::now() - playerMovedTime < std::chrono::seconds{ 1 } )
+    if ( Clock::now() - computerMoveTime < std::chrono::seconds{ 1 } )
         drawGhosts( computerMove->first, computerMove->second );
     else {
         placePiece( computerMove->first, computerMove->second );
