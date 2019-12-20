@@ -29,13 +29,18 @@ target_link_libraries ( othello PUBLIC logging )
 add_library ( AIs
               RandomAi.hpp
               RandomAi.cpp
+              StrategicAi.hpp
+              MinMaxStrategy.hpp
+              MinMaxStrategy.cpp
+              coinParityHeuristic.hpp
+              coinParityHeuristic.cpp
               )
 target_link_libraries ( AIs PUBLIC othello )
 
 add_executable ( othello_exe
                  main.cpp
-                 mainMenu.hpp
-                 mainMenu.cpp
+                 MainMenu.hpp
+                 MainMenu.cpp
                  OthelloWindow.hpp
                  OthelloWindow.cpp
                  )

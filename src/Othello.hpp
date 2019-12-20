@@ -26,6 +26,14 @@ public:
 
     Othello();
 
+    Othello( const Othello& ) = default;
+
+    Othello( Othello&& ) = default;
+
+    Othello& operator=( const Othello& ) = default;
+
+    Othello& operator=( Othello&& ) = default;
+
     /**
      * Gets the current score as a pair, black score first, white score second
      * @return
@@ -50,5 +58,8 @@ private:
     bool       blackTurn           = true;
 };
 
+bool operator==( const Othello& a, const Othello& b );
 
-
+inline bool operator!=( const Othello& a, const Othello& b ) {
+    return !( a == b );
+}

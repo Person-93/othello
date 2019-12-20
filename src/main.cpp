@@ -7,7 +7,7 @@
 #include "util/configure_logging.hpp"
 #include "gui/ImGuiWrapper.hpp"
 #include "OthelloWindow.hpp"
-#include "mainMenu.hpp"
+#include "MainMenu.hpp"
 
 std::atomic_bool shouldRun = true;
 
@@ -23,10 +23,11 @@ int main() try {
     LOG4CPLUS_DEBUG( log4cplus::Logger::getRoot(), "Running version: " << version::longVersion());
     gui::ImGuiWrapper imGuiWrapper( "Othello" );
     OthelloWindow     othelloWindow{};
+    MainMenu          mainMenu{ imGuiWrapper, othelloWindow };
 
     while ( shouldRun && !imGuiWrapper.shouldClose()) {
         auto f = imGuiWrapper.frame( 20 );
-        mainMenu( imGuiWrapper, othelloWindow );
+        mainMenu();
         othelloWindow.render( imGuiWrapper );
         scoreWindow( imGuiWrapper, othelloWindow.othello().score());
         if ( othelloWindow.gameOver()) gameOverWindow( imGuiWrapper, othelloWindow.othello().score());
