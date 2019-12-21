@@ -5,6 +5,7 @@
 #include "StrategicAi.hpp"
 #include "coinParityHeuristic.hpp"
 #include "MinMaxStrategy.hpp"
+#include "mobilityHeuristic.hpp"
 
 void MainMenu::operator()() {
     imGuiWrapper.mainMenu( [ this ] {
@@ -22,6 +23,7 @@ void MainMenu::gameMenu() {
                 othelloWindow.reset( std::make_unique<RandomAI>());
             } );
             strategicAiMenuItem<coinParityHeuristic, MinMaxStrategy>( "MinMax - Coin Parity", 5 );
+            strategicAiMenuItem<mobilityHeuristic, MinMaxStrategy>( "MinMax - Mobility", 5 );
         } );
     } );
 }

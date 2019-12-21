@@ -34,6 +34,8 @@ add_library ( AIs
               MinMaxStrategy.cpp
               coinParityHeuristic.hpp
               coinParityHeuristic.cpp
+              mobilityHeuristic.hpp
+              mobilityHeuristic.cpp
               )
 target_link_libraries ( AIs PUBLIC othello )
 
