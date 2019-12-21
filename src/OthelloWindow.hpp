@@ -44,8 +44,10 @@ private:
     std::optional<std::future<AI::Move>> computerMoveFuture{};
     std::optional<AI::Move>              computerMove;
     gui::WindowConfig                    config;
+    gui::WindowConfig                    errorWindowConfig;
     std::unique_ptr<AI>                  ai;
     bool                                 aiIsBlack = true;
+    std::optional<std::string>           errorInfo{};
 };
 
 
