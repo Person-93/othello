@@ -45,10 +45,10 @@ MinMaxStrategy::minimax( HeuristicFunction heuristic,
         bool goAgain        = blackTurn == childBlackTurn;
         Node opponentChild  = minimax( heuristic, child, depth + 1, goAgain == maximizingPlayer );
         if ( maximizingPlayer ) {
-            if ( opponentChild.score > value.score ) value = opponentChild;
+            if ( opponentChild.score >= value.score ) value = opponentChild;
         }
         else {
-            if ( opponentChild.score < value.score ) value = opponentChild;
+            if ( opponentChild.score <= value.score ) value = opponentChild;
         }
     }
     if ( depth > 0 ) value.move = node.move;
