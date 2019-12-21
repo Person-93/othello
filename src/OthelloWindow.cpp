@@ -1,3 +1,4 @@
+#include <boost/exception/diagnostic_information.hpp>
 #include "OthelloWindow.hpp"
 #include "util/define_logger.hpp"
 
@@ -17,6 +18,8 @@ namespace {
 OthelloWindow::OthelloWindow() : config{
         .title = "Game",
         .flags = ImGuiWindowFlags_NoTitleBar,
+}, errorWindowConfig{
+        .title = "Error"
 } {}
 
 OthelloWindow::~OthelloWindow() = default;
@@ -24,21 +27,29 @@ OthelloWindow::~OthelloWindow() = default;
 void OthelloWindow::render( gui::ImGuiWrapper& imGuiWrapper ) {
     ImGui::SetNextWindowPosCenter();
     ImGui::SetNextWindowSize( { 720, 720 }, ImGuiCond_Once );
-    ImGui::PushStyleColor( ImGuiCol_WindowBg, ImU32( boardColor ));
-    struct Finally {
-        ~Finally() {
-            ImGui::PopStyleColor();
-        }
-    } aFinally;
-    imGuiWrapper.window( config, [ this ] {
-        renderGrid();
-        renderPieces();
-        if ( othello().legalMoves().empty()) return;
-        if ( isPlayerTurn())
-            handlePlayerTurn();
-        else
-            handleComputerTurn();
-    } );
+    {
+        ImGui::PushStyleColor( ImGuiCol_WindowBg, ImU32( boardColor ));
+        struct Finally {
+            ~Finally() {
+                ImGui::PopStyleColor();
+            }
+        } aFinally;
+        imGuiWrapper.window( config, [ this ] {
+            renderGrid();
+            renderPieces();
+            if ( errorInfo ) return;
+            if ( othello().legalMoves().empty()) return;
+            if ( isPlayerTurn())
+                handlePlayerTurn();
+            else
+                handleComputerTurn();
+        } );
+    }
+    if ( errorInfo ) {
+        imGuiWrapper.window( errorWindowConfig, [ this ] {
+            ImGui::TextUnformatted( errorInfo->c_str());
+        } );
+    }
 }
 
 void OthelloWindow::renderGrid() {
@@ -112,6 +123,7 @@ void OthelloWindow::drawGhosts( int x, int y ) {
 void OthelloWindow::reset( std::unique_ptr<AI> ai ) {
     othello_ = {};
     this->ai = std::move( ai );
+    errorInfo = std::nullopt;
 }
 
 bool OthelloWindow::isPlayerTurn() const {
@@ -155,8 +167,13 @@ void OthelloWindow::handleComputerTurn() {
     if ( !computerMove.has_value() &&
          computerMoveFuture->valid() &&
          computerMoveFuture->wait_for( std::chrono::duration<int>::zero()) == std::future_status::ready ) {
-        computerMove     = computerMoveFuture->get();
-        computerMoveTime = Clock::now();
+        try {
+            computerMove     = computerMoveFuture->get();
+            computerMoveTime = Clock::now();
+        }
+        catch ( ... ) {
+            errorInfo = boost::current_exception_diagnostic_information( true );
+        }
     }
 
     if ( !computerMove.has_value()) return;
