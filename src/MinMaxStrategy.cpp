@@ -1,6 +1,9 @@
 #include "MinMaxStrategy.hpp"
 #include "Othello.hpp"
+#include "util/define_logger.hpp"
+#include "Exception.hpp"
 
+DEFINE_LOGGER( MinMaxStrategy )
 
 struct MinMaxStrategy::Node {
     Othello  othello;
@@ -17,6 +20,8 @@ AI::Move MinMaxStrategy::nextMove( HeuristicFunction heuristic, const Othello& o
             .score = std::numeric_limits<double>::min()
     };
     Node node = minimax( heuristic, origin, 0, true );
+    if ( node.move == origin.move )
+        THROW_SIMPLE_EXCEPTION( "No move was selected" );
     return node.move;
 }
 
@@ -34,8 +39,11 @@ MinMaxStrategy::minimax( HeuristicFunction heuristic,
             .score = maximizingPlayer ? std::numeric_limits<double>::min() : std::numeric_limits<double>::max()
     };
     for ( const auto&[move, capture]: node.othello.legalMoves()) {
-        Node child         = makeNode( heuristic, node.othello, move );
-        Node opponentChild = minimax( heuristic, child, depth + 1, !maximizingPlayer );
+        Node child          = makeNode( heuristic, node.othello, move );
+        bool blackTurn      = node.othello.isBlackTurn();
+        bool childBlackTurn = child.othello.isBlackTurn();
+        bool goAgain        = blackTurn == childBlackTurn;
+        Node opponentChild  = minimax( heuristic, child, depth + 1, goAgain == maximizingPlayer );
         if ( maximizingPlayer ) {
             if ( opponentChild.score > value.score ) value = opponentChild;
         }
