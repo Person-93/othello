@@ -30,6 +30,7 @@ add_library ( AIs
               RandomAi.hpp
               RandomAi.cpp
               StrategicAi.hpp
+              StrategicAi.cpp
               MinMaxStrategy.hpp
               MinMaxStrategy.cpp
               coinParityHeuristic.hpp
