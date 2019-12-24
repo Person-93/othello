@@ -9,11 +9,11 @@
 
 class OthelloWindow {
 public:
-    OthelloWindow();
+    explicit OthelloWindow( gui::ImGuiWrapper& imGuiWrapper );
 
     ~OthelloWindow();
 
-    void render( gui::ImGuiWrapper& imGuiWrapper );
+    void operator()();
 
     [[nodiscard]] const Othello& othello() const { return othello_; }
 
@@ -48,6 +48,7 @@ private:
     std::unique_ptr<AI>                  ai;
     bool                                 aiIsBlack = true;
     std::optional<std::string>           errorInfo{};
+    gui::ImGuiWrapper& imGuiWrapper;
 };
 
 
