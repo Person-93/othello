@@ -22,13 +22,13 @@ int main() try {
     util::ConfigureLogging();
     LOG4CPLUS_DEBUG( log4cplus::Logger::getRoot(), "Running version: " << version::longVersion());
     gui::ImGuiWrapper imGuiWrapper( "Othello" );
-    OthelloWindow     othelloWindow{};
+    OthelloWindow     othelloWindow{ imGuiWrapper };
     MainMenu          mainMenu{ imGuiWrapper, othelloWindow };
 
     while ( shouldRun && !imGuiWrapper.shouldClose()) {
         auto f = imGuiWrapper.frame( 20 );
         mainMenu();
-        othelloWindow.render( imGuiWrapper );
+        othelloWindow();
         scoreWindow( imGuiWrapper, othelloWindow.othello().score());
         if ( othelloWindow.gameOver()) gameOverWindow( imGuiWrapper, othelloWindow.othello().score());
     }

@@ -15,16 +15,16 @@ namespace {
 }
 #pragma clang diagnostic pop
 
-OthelloWindow::OthelloWindow() : config{
+OthelloWindow::OthelloWindow( gui::ImGuiWrapper& imGuiWrapper ) : config{
         .title = "Game",
         .flags = ImGuiWindowFlags_NoTitleBar,
 }, errorWindowConfig{
         .title = "Error"
-} {}
+}, imGuiWrapper{ imGuiWrapper } {}
 
 OthelloWindow::~OthelloWindow() = default;
 
-void OthelloWindow::render( gui::ImGuiWrapper& imGuiWrapper ) {
+void OthelloWindow::operator()() {
     ImGui::SetNextWindowPosCenter();
     ImGui::SetNextWindowSize( { 720, 720 }, ImGuiCond_Once );
     {
