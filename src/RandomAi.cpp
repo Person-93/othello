@@ -2,7 +2,7 @@
 #include "Othello.hpp"
 #include <random>
 
-auto RandomAI::go( const Othello& othello, bool isBlack ) -> Move {
+AI::Move RandomAI::go( const Othello& othello ) {
     static std::mt19937           generator{ std::random_device{}() };
     std::uniform_int_distribution distribution{ 0, Othello::boardSize - 1 };
 

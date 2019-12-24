@@ -9,7 +9,7 @@ public:
     StrategicAi( std::unique_ptr<Strategy> strategy, HeuristicFunction heuristic ) :
             strategy{ std::move( strategy ) }, heuristic{ heuristic } {}
 
-    Move go( const Othello& othello, bool isBlack ) override;
+    Move go( const Othello& othello ) override;
 
 private:
     const std::unique_ptr<Strategy> strategy;
