@@ -6,6 +6,7 @@
 #include "coinParityHeuristic.hpp"
 #include "MinMaxStrategy.hpp"
 #include "mobilityHeuristic.hpp"
+#include "stabilityHeuristic.hpp"
 
 void MainMenu::operator()() {
     imGuiWrapper.mainMenu( [ this ] {
@@ -24,6 +25,7 @@ void MainMenu::gameMenu() {
             } );
             strategicAiMenuItem<coinParityHeuristic, MinMaxStrategy>( "MinMax - Coin Parity", 5 );
             strategicAiMenuItem<mobilityHeuristic, MinMaxStrategy>( "MinMax - Mobility", 5 );
+            strategicAiMenuItem<stabilityHeuristic, MinMaxStrategy>( "MinMax - Stability", 5 );
         } );
     } );
 }

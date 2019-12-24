@@ -37,6 +37,8 @@ add_library ( AIs
               coinParityHeuristic.cpp
               mobilityHeuristic.hpp
               mobilityHeuristic.cpp
+              stabilityHeuristic.hpp
+              stabilityHeuristic.cpp
               )
 target_link_libraries ( AIs PUBLIC othello )
 
