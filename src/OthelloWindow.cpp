@@ -161,7 +161,7 @@ void OthelloWindow::handlePlayerTurn() {
 
 void OthelloWindow::handleComputerTurn() {
     if ( !computerMoveFuture.has_value()) {
-        computerMoveFuture = std::async( std::launch::async, [ this ] { return ai->go( othello(), aiIsBlack ); } );
+        computerMoveFuture = std::async( std::launch::async, [ this ] { return ai->go( othello()); } );
         return;
     }
     if ( !computerMove.has_value() &&

@@ -5,7 +5,7 @@
 
 DEFINE_LOGGER( StrategicAi )
 
-AI::Move StrategicAi::go( const Othello& othello, bool isBlack ) {
+AI::Move StrategicAi::go( const Othello& othello ) {
     switch ( othello.legalMoves().size()) {
         case 0: THROW_SIMPLE_EXCEPTION( "No legal moves available" );
         case 1: return othello.legalMoves().begin()->first;
