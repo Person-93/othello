@@ -39,6 +39,10 @@ add_library ( AIs
               mobilityHeuristic.cpp
               stabilityHeuristic.hpp
               stabilityHeuristic.cpp
+              cornerHeuristic.hpp
+              cornerHeuristic.cpp
+              compositeHeuristic.hpp
+              compositeHeuristic.cpp
               )
 target_link_libraries ( AIs PUBLIC othello )
 
