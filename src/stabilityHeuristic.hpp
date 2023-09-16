@@ -2,4 +2,4 @@
 
 class Othello;
 
-double stabilityHeuristic( const Othello& othello );
+double stabilityHeuristic(const Othello &othello);

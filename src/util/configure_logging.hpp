@@ -1,5 +1,5 @@
 #pragma once
 
 namespace util {
-    void ConfigureLogging();
+void ConfigureLogging();
 }

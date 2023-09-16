@@ -2,4 +2,4 @@
 
 class Othello;
 
-using HeuristicFunction = double ( * )( const Othello& );
+using HeuristicFunction = double (*)(const Othello &);

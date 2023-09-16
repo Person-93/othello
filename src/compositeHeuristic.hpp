@@ -2,4 +2,4 @@
 
 class Othello;
 
-double compositeHeuristic(const Othello& othello);
+double compositeHeuristic(const Othello &othello);

@@ -2,4 +2,4 @@
 
 class Othello;
 
-double coinParityHeuristic( const Othello& othello );
+double coinParityHeuristic(const Othello &othello);

@@ -4,8 +4,5 @@
 
 class RandomAI : public AI {
 public:
-    Move go( const Othello& othello ) override;
+  Move go(const Othello &othello) override;
 };
-
-
-

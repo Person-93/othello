@@ -1,56 +1,53 @@
 #pragma once
 
+#include "AI.hpp"
 #include "Othello.hpp"
 #include "gui/ImGuiWrapper.hpp"
-#include <memory>
 #include <chrono>
 #include <future>
+#include <memory>
 #include <optional>
-#include "AI.hpp"
 
 class OthelloWindow {
 public:
-    explicit OthelloWindow( gui::ImGuiWrapper& imGuiWrapper );
+  explicit OthelloWindow(gui::ImGuiWrapper &imGuiWrapper);
 
-    ~OthelloWindow();
+  ~OthelloWindow();
 
-    void operator()();
+  void operator()();
 
-    [[nodiscard]] const Othello& othello() const { return othello_; }
+  [[nodiscard]] const Othello &othello() const { return othello_; }
 
-    void reset( std::unique_ptr<AI> ai );
+  void reset(std::unique_ptr<AI> ai);
 
-    bool gameOver() const;
+  bool gameOver() const;
 
 private:
-    static void renderGrid();
+  static void renderGrid();
 
-    void renderPieces();
+  void renderPieces();
 
-    void drawGhosts( int x, int y );
+  void drawGhosts(int x, int y);
 
-    [[nodiscard]] bool isPlayerTurn() const;
+  [[nodiscard]] bool isPlayerTurn() const;
 
-    void handlePlayerTurn();
+  void handlePlayerTurn();
 
-    void handleComputerTurn();
+  void handleComputerTurn();
 
-    void placePiece( int x, int y );
+  void placePiece(int x, int y);
 
-    using Clock = std::chrono::steady_clock;
-    using TimePoint = std::chrono::time_point<Clock>;
+  using Clock = std::chrono::steady_clock;
+  using TimePoint = std::chrono::time_point<Clock>;
 
-    Othello                              othello_;
-    TimePoint                            computerMoveTime;
-    std::optional<std::future<AI::Move>> computerMoveFuture{};
-    std::optional<AI::Move>              computerMove;
-    gui::WindowConfig                    config;
-    gui::WindowConfig                    errorWindowConfig;
-    std::unique_ptr<AI>                  ai;
-    bool                                 aiIsBlack = true;
-    std::optional<std::string>           errorInfo{};
-    gui::ImGuiWrapper& imGuiWrapper;
+  Othello othello_;
+  TimePoint computerMoveTime;
+  std::optional<std::future<AI::Move>> computerMoveFuture{};
+  std::optional<AI::Move> computerMove;
+  gui::WindowConfig config;
+  gui::WindowConfig errorWindowConfig;
+  std::unique_ptr<AI> ai;
+  bool aiIsBlack = true;
+  std::optional<std::string> errorInfo{};
+  gui::ImGuiWrapper &imGuiWrapper;
 };
-
-
-

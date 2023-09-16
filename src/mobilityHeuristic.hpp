@@ -2,4 +2,4 @@
 
 class Othello;
 
-double mobilityHeuristic( const Othello& othello );
+double mobilityHeuristic(const Othello &othello);

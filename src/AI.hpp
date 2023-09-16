@@ -6,9 +6,9 @@ class Othello;
 
 class AI {
 public:
-    using Move = std::pair<int, int>;
+  using Move = std::pair<int, int>;
 
-    virtual Move go( const Othello& othello ) = 0;
+  virtual Move go(const Othello &othello) = 0;
 
-    virtual ~AI() = default;
+  virtual ~AI() = default;
 };

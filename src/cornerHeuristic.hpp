@@ -2,4 +2,4 @@
 
 class Othello;
 
-double cornerHeuristic( const Othello& othello );
+double cornerHeuristic(const Othello &othello);

@@ -3,25 +3,24 @@
 #include "HeuristicFunction.hpp"
 
 namespace gui {
-    struct ImGuiWrapper;
+struct ImGuiWrapper;
 }
 
 class OthelloWindow;
 
 class MainMenu {
 public:
-    MainMenu( gui::ImGuiWrapper& imGuiWrapper, OthelloWindow& othelloWindow ) :
-            imGuiWrapper{ imGuiWrapper }, othelloWindow{ othelloWindow } {}
+  MainMenu(gui::ImGuiWrapper &imGuiWrapper, OthelloWindow &othelloWindow)
+      : imGuiWrapper{imGuiWrapper}, othelloWindow{othelloWindow} {}
 
-    void operator()();
+  void operator()();
 
 private:
-    void gameMenu();
+  void gameMenu();
 
-    template< HeuristicFunction function, class Strategy, class... Args >
-    void strategicAiMenuItem( const char* label, Args&& ... args );
+  template <HeuristicFunction function, class Strategy, class... Args>
+  void strategicAiMenuItem(const char *label, Args &&...args);
 
-    gui::ImGuiWrapper& imGuiWrapper;
-    OthelloWindow    & othelloWindow;
+  gui::ImGuiWrapper &imGuiWrapper;
+  OthelloWindow &othelloWindow;
 };
-

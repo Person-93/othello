@@ -4,19 +4,20 @@
 
 class MinMaxStrategy : public Strategy {
 public:
-    explicit MinMaxStrategy( int maxDepth );
+  explicit MinMaxStrategy(int maxDepth);
 
-    AI::Move nextMove( HeuristicFunction heuristic, const Othello& othello ) override;
+  AI::Move nextMove(HeuristicFunction heuristic,
+                    const Othello &othello) override;
 
 private:
-    struct Node;
+  struct Node;
 
-    MinMaxStrategy::Node minimax( HeuristicFunction heuristic,
-                                  const MinMaxStrategy::Node& node,
-                                  int depth,
-                                  bool maximizingPlayer );
+  MinMaxStrategy::Node minimax(HeuristicFunction heuristic,
+                               const MinMaxStrategy::Node &node, int depth,
+                               bool maximizingPlayer);
 
-    static MinMaxStrategy::Node makeNode( HeuristicFunction heuristic, const Othello& othello, AI::Move move );
+  static MinMaxStrategy::Node makeNode(HeuristicFunction heuristic,
+                                       const Othello &othello, AI::Move move);
 
-    const int maxDepth;
+  const int maxDepth;
 };

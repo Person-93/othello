@@ -1,165 +1,178 @@
 #pragma once
 
-#include <string_view>
-#include <functional>
-#include <string>
 #include "imgui.h" // IWYU pragma: export
 #include "util/define_logger.hpp"
+#include <functional>
+#include <string>
+#include <string_view>
 
-#define IMGUI_WRAPPER_WIDGET( widget, close, AlwaysClose ) \
-class widget {                               \
-public:                                      \
-    CONSTRUCTORS                             \
-    ~widget() {                              \
-        TRACE;                               \
-        if( AlwaysClose || opened ) close(); \
-    }                                        \
-    operator bool() & { return opened; }     \
-private:                                     \
-    bool opened;                             \
-}
+#define IMGUI_WRAPPER_WIDGET(widget, close, AlwaysClose)                       \
+  class widget {                                                               \
+  public:                                                                      \
+    CONSTRUCTORS                                                               \
+    ~widget() {                                                                \
+      TRACE;                                                                   \
+      if (AlwaysClose || opened)                                               \
+        close();                                                               \
+    }                                                                          \
+    operator bool() & { return opened; }                                       \
+                                                                               \
+  private:                                                                     \
+    bool opened;                                                               \
+  }
 
 namespace gui {
-    struct WindowConfig {
-        std::string title;
-        bool* open = nullptr;
-        ImGuiWindowFlags flags = 0;
-    };
+struct WindowConfig {
+  std::string title;
+  bool *open = nullptr;
+  ImGuiWindowFlags flags = 0;
+};
 
-    struct ChildWindowConfig {
-        std::string      str_id;
-        ImVec2           size;
-        bool             border;
-        ImGuiWindowFlags flags;
-    };
+struct ChildWindowConfig {
+  std::string str_id;
+  ImVec2 size;
+  bool border;
+  ImGuiWindowFlags flags;
+};
 
-    /**
-     * An RAII class to initialize and shutdown ImGui
-     */
-    struct ImGuiWrapper {
-        explicit ImGuiWrapper( std::string_view title = "" );
+/**
+ * An RAII class to initialize and shutdown ImGui
+ */
+struct ImGuiWrapper {
+  explicit ImGuiWrapper(std::string_view title = "");
 
-        ~ImGuiWrapper();
+  ~ImGuiWrapper();
 
-        bool shouldClose();
+  bool shouldClose();
 
-        void setWindowTitle( std::string_view title );
+  void setWindowTitle(std::string_view title);
 
-        /**
-         * An RAII class to start and end a frame in ImGui
-         */
-        class Frame {
-            explicit Frame( int fps );
+  /**
+   * An RAII class to start and end a frame in ImGui
+   */
+  class Frame {
+    explicit Frame(int fps);
 
-            friend ImGuiWrapper;
-        public:
-            ~Frame();
+    friend ImGuiWrapper;
 
-            int fps;
-        };
+  public:
+    ~Frame();
 
-        Frame frame( int fps = 60 );
+    int fps;
+  };
 
-        template< typename Function >
-        bool window( WindowConfig& config, Function function ) {
-            static_assert( std::is_invocable_v<Function> );
+  Frame frame(int fps = 60);
 
-            using detail::GetLogger;
-#define CONSTRUCTORS Window(std::string_view title, bool* open, ImGuiWindowFlags flags) { \
-    TRACE;                                             \
-    opened = ImGui::Begin(title.begin(), open, flags); \
-}
-            IMGUI_WRAPPER_WIDGET( Window, ImGui::End, true );
+  template <typename Function>
+  bool window(WindowConfig &config, Function function) {
+    static_assert(std::is_invocable_v<Function>);
+
+    using detail::GetLogger;
+#define CONSTRUCTORS                                                           \
+  Window(std::string_view title, bool *open, ImGuiWindowFlags flags) {         \
+    TRACE;                                                                     \
+    opened = ImGui::Begin(title.begin(), open, flags);                         \
+  }
+    IMGUI_WRAPPER_WIDGET(Window, ImGui::End, true);
 #undef CONSTRUCTORS
 
-            TRACE;
+    TRACE;
 
-            Window w( config.title.c_str(), config.open, config.flags );
-            if ( w ) function();
-            return w;
-        }
+    Window w(config.title.c_str(), config.open, config.flags);
+    if (w)
+      function();
+    return w;
+  }
 
+  template <typename Function>
+  bool childWindow(ChildWindowConfig &config, Function function) {
+    static_assert(std::is_invocable_v<Function>);
 
-        template< typename Function >
-        bool childWindow( ChildWindowConfig& config, Function function ) {
-            static_assert( std::is_invocable_v<Function> );
-
-            using detail::GetLogger;
-#define CONSTRUCTORS ChildWindow(std::string_view str_id, const ImVec2& size, bool border, ImGuiWindowFlags flags) { \
-    TRACE;                                                             \
-    opened = ImGui::BeginChild( str_id.begin(), size, border, flags ); \
-}
-            IMGUI_WRAPPER_WIDGET( ChildWindow, ImGui::EndChild, true );
+    using detail::GetLogger;
+#define CONSTRUCTORS                                                           \
+  ChildWindow(std::string_view str_id, const ImVec2 &size, bool border,        \
+              ImGuiWindowFlags flags) {                                        \
+    TRACE;                                                                     \
+    opened = ImGui::BeginChild(str_id.begin(), size, border, flags);           \
+  }
+    IMGUI_WRAPPER_WIDGET(ChildWindow, ImGui::EndChild, true);
 #undef CONSTRUCTORS
 
-            TRACE;
+    TRACE;
 
-            ChildWindow w( config.str_id.c_str(), config.size, config.border, config.flags );
-            if ( w ) function();
-            return w;
-        }
+    ChildWindow w(config.str_id.c_str(), config.size, config.border,
+                  config.flags);
+    if (w)
+      function();
+    return w;
+  }
 
-        class DisableControls {
-        private:
-            friend ImGuiWrapper;
+  class DisableControls {
+  private:
+    friend ImGuiWrapper;
 
-            explicit DisableControls( bool disable );
+    explicit DisableControls(bool disable);
 
-        public:
-            void disable();
+  public:
+    void disable();
 
-            void enable();
+    void enable();
 
-            ~DisableControls();
+    ~DisableControls();
 
-        private:
-            bool disabled;
-        };
+  private:
+    bool disabled;
+  };
 
-        DisableControls disableControls( bool disable = true );
+  DisableControls disableControls(bool disable = true);
 
-        template< typename Function >
-        bool mainMenu( Function function ) {
-            static_assert( std::is_invocable_v<Function> );
+  template <typename Function> bool mainMenu(Function function) {
+    static_assert(std::is_invocable_v<Function>);
 
-            using detail::GetLogger;
-#define CONSTRUCTORS MainMenu() {       \
-    TRACE;                              \
-    opened = ImGui::BeginMainMenuBar(); \
-}
-            IMGUI_WRAPPER_WIDGET( MainMenu, ImGui::EndMainMenuBar, false );
+    using detail::GetLogger;
+#define CONSTRUCTORS                                                           \
+  MainMenu() {                                                                 \
+    TRACE;                                                                     \
+    opened = ImGui::BeginMainMenuBar();                                        \
+  }
+    IMGUI_WRAPPER_WIDGET(MainMenu, ImGui::EndMainMenuBar, false);
 #undef CONSTRUCTORS
 
-            TRACE;
-            MainMenu m;
-            if ( m ) function();
-            return m;
-        }
+    TRACE;
+    MainMenu m;
+    if (m)
+      function();
+    return m;
+  }
 
-        template< typename Function >
-        void menu( std::string_view label, bool enabled, Function function ) {
-            static_assert( std::is_invocable_v<Function> );
+  template <typename Function>
+  void menu(std::string_view label, bool enabled, Function function) {
+    static_assert(std::is_invocable_v<Function>);
 
-            using detail::GetLogger;
-#define CONSTRUCTORS Menu( std::string_view label, bool enabled ) { \
-    TRACE;                                                          \
-    opened = ImGui::BeginMenu( label.begin(), enabled );            \
-}
-            IMGUI_WRAPPER_WIDGET( Menu, ImGui::EndMenu, false );
+    using detail::GetLogger;
+#define CONSTRUCTORS                                                           \
+  Menu(std::string_view label, bool enabled) {                                 \
+    TRACE;                                                                     \
+    opened = ImGui::BeginMenu(label.begin(), enabled);                         \
+  }
+    IMGUI_WRAPPER_WIDGET(Menu, ImGui::EndMenu, false);
 #undef CONSTRUCTORS
 
-            TRACE;
-            if ( Menu m( label, enabled ); m ) function();
-        }
+    TRACE;
+    if (Menu m(label, enabled); m)
+      function();
+  }
 
-        template< typename Function >
-        void menuItem( std::string_view label, bool selected, bool enabled, Function function ) {
-            static_assert( std::is_invocable_v<Function> );
-            using detail::GetLogger;
-            TRACE;
-            if ( ImGui::MenuItem( label.begin(), nullptr, selected, enabled )) function();
-        }
-    };
-}
+  template <typename Function>
+  void menuItem(std::string_view label, bool selected, bool enabled,
+                Function function) {
+    static_assert(std::is_invocable_v<Function>);
+    using detail::GetLogger;
+    TRACE;
+    if (ImGui::MenuItem(label.begin(), nullptr, selected, enabled))
+      function();
+  }
+};
+} // namespace gui
 
 #undef IMGUI_WRAPPER_WIDGET
