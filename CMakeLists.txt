@@ -2,17 +2,8 @@ cmake_minimum_required (VERSION 3.13)
 if (DEFINED CMAKE_TOOLCHAIN_FILE)
     message (STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 endif ()
-list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 project (othello)
-include (GetGitRevisionDescription)
-
-git_describe (VERSION --tags --dirty=-dirty)
-message (STATUS "Configuring ${PROJECT_NAME} ${VERSION}")
-set_version_vars ("${VERSION}" "VERSION")
-
-set (version_file ${CMAKE_CURRENT_BINARY_DIR}/version.cpp)
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.cpp.in" "${version_file}" @ONLY)
 
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)

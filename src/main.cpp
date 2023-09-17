@@ -2,7 +2,6 @@
 #include "OthelloWindow.hpp"
 #include "gui/ImGuiWrapper.hpp"
 #include "util/configure_logging.hpp"
-#include "version.hpp"
 #include <atomic>
 #include <boost/exception/diagnostic_information.hpp>
 #include <csignal>
@@ -20,8 +19,6 @@ void gameOverWindow(gui::ImGuiWrapper &imGuiWrapper, std::pair<int, int> score);
 int main() try {
   std::signal(SIGTERM, signalHandler);
   util::ConfigureLogging();
-  LOG4CPLUS_DEBUG(log4cplus::Logger::getRoot(),
-                  "Running version: " << version::longVersion());
   gui::ImGuiWrapper imGuiWrapper("Othello");
   OthelloWindow othelloWindow{imGuiWrapper};
   MainMenu mainMenu{imGuiWrapper, othelloWindow};

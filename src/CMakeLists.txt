@@ -16,9 +16,10 @@ add_library (imgui
              gui/ImGuiWrapper.cpp
              )
 target_link_libraries (imgui PUBLIC imgui_base logging)
-target_compile_definitions (imgui PUBLIC IMGUI_USER_CONFIG= "${PROJECT_SOURCE_DIR}/src/gui/imgui_config.hpp")
-
-add_library (version version.hpp ${version_file})
+target_compile_definitions (imgui
+                            PUBLIC
+                            IMGUI_USER_CONFIG=<${PROJECT_SOURCE_DIR}/src/gui/imgui_config.hpp>
+                            )
 
 add_library (othello
              Othello.hpp
@@ -57,6 +58,5 @@ target_link_libraries (othello_exe
                        logging
                        othello
                        imgui
-                       version
                        AIs
                        )
